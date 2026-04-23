@@ -16,6 +16,8 @@
 // });
 import app from "./app.js";
 import cloudinary from "cloudinary";
+import app from "./app.js";
+import dbConnection from "./database/dbConnection.js";
 
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -23,4 +25,12 @@ cloudinary.v2.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+
+const PORT = process.env.PORT || 4000;
+
+dbConnection().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+});
 export default app;

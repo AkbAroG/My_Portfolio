@@ -18,12 +18,17 @@ import mongoose from "mongoose";
 
 const dbConnection = async () => {
   try {
+    if (mongoose.connection.readyState >= 1) return;
+
     await mongoose.connect(process.env.MONGO_URI, {
-      dbName: "portfolio"
+      dbName: "portfolio",
+      serverSelectionTimeoutMS: 5000,
+      connectTimeoutMS: 10000,
     });
-    console.log("Connected to database!");
+
+    console.log("✅ MongoDB Connected");
   } catch (error) {
-    console.log("Database connection error:", error);
+    console.log("❌ DB Error:", error.message);
   }
 };
 
