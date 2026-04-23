@@ -95,7 +95,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/v1/user", userRouter);
-app.use("/api/v1", userRouter);
+// app.use("/api/v1", userRouter);
 app.use("/api/v1/timeline", timelineRouter);
 app.use("/api/v1/message", messageRouter);
 app.use("/api/v1/skill", skillRouter);
