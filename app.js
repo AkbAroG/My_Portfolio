@@ -79,6 +79,13 @@ app.use("*",
   })
 );
 
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  next();
+});
+
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -94,13 +101,13 @@ app.get("/", (req, res) => {
   res.send("Backend Running Successfully");
 });
 
-app.use("/user", userRouter);
+app.use("/api/v1/user", userRouter);
 // app.use("/api/v1", userRouter);
-app.use("/timeline", timelineRouter);
-app.use("/message", messageRouter);
-app.use("/skill", skillRouter);
-app.use("/softwareapplication", softwareApplicationRouter);
-app.use("/project", projectRouter);
+app.use("/api/v1/timeline", timelineRouter);
+app.use("/api/v1/message", messageRouter);
+app.use("/api/v1/skill", skillRouter);
+app.use("/api/v1/softwareapplication", softwareApplicationRouter);
+app.use("/api/v1/project", projectRouter);
 
 app.use(errorMiddleware);
 
