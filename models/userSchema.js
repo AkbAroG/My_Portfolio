@@ -104,7 +104,10 @@
 //   return resetToken;
 // };
 
+
 // export const User = mongoose.model("User", userSchema);
+
+
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -119,98 +122,65 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, "Email Required!"],
     unique: true,
-    lowercase: true, // ✅ important
+    lowercase: true,
     trim: true,
   },
   phone: {
     type: String,
-    required: [true, "Phone Required!"],
+    default: "",        // ← required hata diya
   },
   aboutMe: {
     type: String,
-    required: [true, "About Me Section Is Required!"],
+    default: "Portfolio user", // ← required hata diya
   },
   password: {
     type: String,
     required: [true, "Password Required!"],
     minLength: [8, "Password Must Contain At Least 8 Characters!"],
-    select: false, // ✅ hide password
+    select: false,
   },
   avatar: {
-    public_id: {
-      type: String,
-      required: true,
-    },
-    url: {
-      type: String,
-      required: true,
-    },
+    public_id: { type: String, default: "default_avatar" },
+    url: { type: String, default: "https://via.placeholder.com/150" },
   },
   resume: {
-    public_id: {
-      type: String,
-      required: true,
-    },
-    url: {
-      type: String,
-      required: true,
-    },
+    public_id: { type: String, default: "default_resume" },
+    url: { type: String, default: "https://via.placeholder.com/150" },
   },
   portfolioURL: {
     type: String,
-    required: [true, "Portfolio URL Required!"],
+    default: "",        // ← required hata diya
   },
-  githubURL: String,
-  instagramURL: String,
-  twitterURL: String,
-  linkedInURL: String,
-  facebookURL: String,
-
+  githubURL:    { type: String, default: "" },
+  instagramURL: { type: String, default: "" },
+  twitterURL:   { type: String, default: "" },
+  linkedInURL:  { type: String, default: "" },
+  facebookURL:  { type: String, default: "" },
   resetPasswordToken: String,
   resetPasswordExpire: Date,
 }, { timestamps: true });
 
-
-// 🔥 PASSWORD HASH FIXED
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) {
-    return next(); // ✅ MUST RETURN
-  }
+  if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 10);
 });
 
-
-// 🔥 PASSWORD COMPARE
 userSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-
-// 🔥 JWT TOKEN
 userSchema.methods.generateJsonWebToken = function () {
-  return jwt.sign(
-    { id: this._id },
-    process.env.JWT_SECRET_KEY,
-    {
-      expiresIn: process.env.JWT_EXPIRES || "7d",
-    }
-  );
+  return jwt.sign({ id: this._id }, process.env.JWT_SECRET_KEY, {
+    expiresIn: process.env.JWT_EXPIRES || "7d",
+  });
 };
 
-
-// 🔥 RESET PASSWORD TOKEN
 userSchema.methods.getResetPasswordToken = function () {
   const resetToken = crypto.randomBytes(20).toString("hex");
-
   this.resetPasswordToken = crypto
-    .createHash("sha256")
-    .update(resetToken)
-    .digest("hex");
-
+    .createHash("sha256").update(resetToken).digest("hex");
   this.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
-
   return resetToken;
 };
-
 
 export const User = mongoose.model("User", userSchema);
