@@ -41,5 +41,5 @@ const startServer = async () => {
     console.log("Server Error:", error);
   }
 };
-
+export default app;
 startServer();

@@ -73,7 +73,18 @@ const app = express();
 // ✅ Sirf ek CORS — sahi tarika
 app.use(
   cors({
-    origin: [process.env.PORTFOLIO_URL, process.env.DASHBOARD_URL],
+    origin: function (origin, callback) {
+      const allowed = [
+        process.env.PORTFOLIO_URL,
+        process.env.DASHBOARD_URL,
+      ];
+      // ← Yeh line "Legacy server" wali 400 fix karegi
+      if (!origin || allowed.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
